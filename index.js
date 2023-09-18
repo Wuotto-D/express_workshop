@@ -1,35 +1,18 @@
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const express = require('express');
 const app = express();
-const { pokemon } = require('./pokedex.json')
+const pokemon = require ('./routes/pokemon');
+
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res, next)=> {
-    res.status(200);
-    res.send("Bienvenidos al Pokedex");
-});
-app.get('/pokemon/all', (req, res, next) =>{
-    res.status(200);
-    res.send(pokemon);
+   return res.status(200).send("Bienvenidos al Pokedex");
 });
 
-app.get('/pokemon/:id([0-9]{1,3})',(req, res, next) => {
-    const id = req.params.id-1;
-    if(id>=0 && id <= 150){
-        res.status(200);
-       return res.send(pokemon[req.params.id - 1]);
-    }
-});
-
-app.get('/pokemon/:name', (req, res, next)=>{
-    const name = req.params.name;
-    for(i=0; i<pokemon.length; i++){
-        if(pokemon[i].name == name){
-            res.status(200);
-            res.send(pokemon[i]);
-        }
-    }
-    res.status(400);
-    res.send("Pokémon no encontrado")
-});
+app.use("/pokemon", pokemon);
 
 app.listen(process.env.PORT || 3000, () =>{
     console.log("Server is running...");
